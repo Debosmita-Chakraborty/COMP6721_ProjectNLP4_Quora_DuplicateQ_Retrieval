@@ -1,0 +1,71 @@
+TF-IDF indexing time: 3.73 seconds
+
+--- TF-IDF Development Results ---
+Queries evaluated: 4000
+Recall@10: 0.8328
+MRR@10: 0.7236
+Retrieval time: 187.79 seconds
+
+--- TF-IDF Validation Results ---
+Queries evaluated: 1000
+Recall@10: 0.8169
+MRR@10: 0.7024
+Retrieval time: 46.8 seconds
+
+EXAMPLE QUERY WITH TOP 10 DUPLICATES - TEST 1
+
+================================================================================
+ORIGINAL QUERY:
+What are the health benefits of doing pushups everyday?
+
+TOP 10 RETRIEVED QUESTIONS:
+
+Rank: 1
+Similarity: 0.6564
+Question: Is it good to do pushups everyday?
+Known relevant match: NO
+
+Rank: 2
+Similarity: 0.6185
+Question: What are the health benefits of doing pull ups everyday?
+Known relevant match: YES
+
+Rank: 3
+Similarity: 0.477
+Question: What are the health benefits of coffee?
+Known relevant match: NO
+
+Rank: 4
+Similarity: 0.475
+Question: What are the health benefits of drinking?
+Known relevant match: NO
+
+Rank: 5
+Similarity: 0.4728
+Question: What are the health benefits of tea?
+Known relevant match: NO
+
+Rank: 6
+Similarity: 0.4653
+Question: What are benefits of doing MBA?
+Known relevant match: NO
+
+Rank: 7
+Similarity: 0.46
+Question: What are the health benefits of yoga?
+Known relevant match: NO
+
+Rank: 8
+Similarity: 0.4552
+Question: What are the benefits of jogging everyday?
+Known relevant match: NO
+
+Rank: 9
+Similarity: 0.4545
+Question: What are the health benefits of honey?
+Known relevant match: NO
+
+Rank: 10
+Similarity: 0.4484
+Question: What is the benefits of doing mba?
+Known relevant match: NO

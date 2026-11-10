@@ -1,0 +1,71 @@
+BM25 indexing time: 9.73 seconds
+
+--- BM25 Development Results ---
+Queries evaluated: 4000
+Recall@10: 0.8508
+MRR@10: 0.7397
+Retrieval time: 24.3 seconds
+
+--- BM25 Validation Results ---
+Queries evaluated: 1000
+Recall@10: 0.8391
+MRR@10: 0.7314
+Retrieval time: 6.29 seconds
+
+EXAMPLE QUERY WITH TOP 10 DUPLICATES - TEST 1
+
+================================================================================
+ORIGINAL QUERY:
+What are the health benefits of doing pushups everyday?
+
+TOP 10 RETRIEVED QUESTIONS:
+
+Rank: 1
+BM25 Score: 10.7918
+Question: What are the health benefits of doing pull ups everyday?
+Known relevant match: YES
+
+Rank: 2
+BM25 Score: 8.949
+Question: Is it good to do pushups everyday?
+Known relevant match: NO
+
+Rank: 3
+BM25 Score: 7.222
+Question: What are the benefits of jogging everyday?
+Known relevant match: NO
+
+Rank: 4
+BM25 Score: 6.7348
+Question: What are the benefits of running everyday for an hour?
+Known relevant match: NO
+
+Rank: 5
+BM25 Score: 6.7238
+Question: What are the health benefits of fasting?
+Known relevant match: NO
+
+Rank: 6
+BM25 Score: 6.7238
+Question: What are the health benefits of pomegranate?
+Known relevant match: NO
+
+Rank: 7
+BM25 Score: 6.7238
+Question: What are the health benefits of honey?
+Known relevant match: NO
+
+Rank: 8
+BM25 Score: 6.7238
+Question: What are the health benefits of watermelon?
+Known relevant match: NO
+
+Rank: 9
+BM25 Score: 6.7238
+Question: What are the health benefits of tea?
+Known relevant match: NO
+
+Rank: 10
+BM25 Score: 6.7238
+Question: What are the health benefits of Turmeric?
+Known relevant match: NO

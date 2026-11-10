@@ -1,0 +1,6 @@
+beir
+scikit-learn
+numpy
+matplotlib
+rank-bm25
+bm25s
