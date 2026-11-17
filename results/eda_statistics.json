@@ -1,0 +1,59 @@
+{
+  "overview": {
+    "corpus_questions": 522931,
+    "queries": 5000,
+    "dev_queries": 4000,
+    "val_queries": 1000
+  },
+  "query_length": {
+    "mean": 9.5552,
+    "std": 4.194719548959011,
+    "min": 3,
+    "p25": 7.0,
+    "median": 9.0,
+    "p75": 11.0,
+    "p90": 15.0,
+    "p95": 18.0,
+    "p99": 24.0,
+    "max": 58
+  },
+  "corpus_length": {
+    "mean": 11.455723604070135,
+    "std": 6.282749867233656,
+    "min": 1,
+    "p25": 7.0,
+    "median": 10.0,
+    "p75": 14.0,
+    "p90": 19.0,
+    "p95": 24.0,
+    "p99": 33.0,
+    "max": 237
+  },
+  "relevance_dev": {
+    "with_relevant": 4000,
+    "without_relevant": 0,
+    "exactly_one_relevant": 3083,
+    "mean_relevant": 1.53725,
+    "median_relevant": 1.0,
+    "max_relevant": 84,
+    "relevant_ids_missing_from_corpus": 0,
+    "spearman_len_vs_relevant": 0.0073238620898474945
+  },
+  "duplicates": {
+    "duplicate_corpus_exact": 730,
+    "duplicate_corpus_loose": 1610,
+    "duplicate_queries": 0,
+    "repeated_query_groups": 0,
+    "queries_also_in_corpus": 78
+  },
+  "vocabulary": {
+    "query_types": 7158,
+    "corpus_types": 89574,
+    "shared_types": 7057,
+    "mean_pct_query_words_missing": 0.21497470329807794,
+    "queries_with_any_missing_word": 95,
+    "queries_with_no_tokens": 0,
+    "mean_best_overlap_with_relevant": 0.6965701849442174,
+    "queries_zero_overlap_with_relevant": 0
+  }
+}
