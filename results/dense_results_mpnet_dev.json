@@ -1,0 +1,47 @@
+{
+  "info": {
+    "model": "sentence-transformers/all-mpnet-base-v2",
+    "device": "cuda",
+    "parameters_millions": 109.49,
+    "embedding_dim": 768,
+    "index_size_mb_float32": 1606.4,
+    "corpus_size": 522931,
+    "corpus_encode_seconds": 927.4,
+    "corpus_encode_questions_per_second": 563.9,
+    "max_seq_length": 384,
+    "search_dtype": "float16"
+  },
+  "eval": {
+    "dev": {
+      "recall@1": 0.6960616494412449,
+      "recall@5": 0.914395880528785,
+      "recall@10": 0.954923256767742,
+      "recall@20": 0.9765162934002273,
+      "recall@50": 0.9902908699266421,
+      "mrr@10": 0.8679439484126984,
+      "ndcg@10": 0.8792888417207761,
+      "num_queries": 4000,
+      "query_encoding_seconds": 5.222067964999951,
+      "search_seconds": 0.5131259990002945,
+      "total_retrieval_seconds": 5.735193964000246
+    },
+    "val": {
+      "recall@1": 0.6773031746031745,
+      "recall@5": 0.8983353174603175,
+      "recall@10": 0.9436194444444445,
+      "recall@20": 0.9744527777777778,
+      "recall@50": 0.9886571428571428,
+      "mrr@10": 0.8451837301587302,
+      "ndcg@10": 0.8563665414776447,
+      "num_queries": 1000,
+      "query_encoding_seconds": 1.3781813559999136,
+      "search_seconds": 0.1265334489999077,
+      "total_retrieval_seconds": 1.5047148049998214
+    }
+  },
+  "latency": {
+    "mean_ms": 28.94637079999029,
+    "median_ms": 26.078388499854555,
+    "p95_ms": 44.18775110002568
+  }
+}
