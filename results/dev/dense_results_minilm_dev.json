@@ -6,8 +6,8 @@
     "embedding_dim": 384,
     "index_size_mb_float32": 803.2,
     "corpus_size": 522931,
-    "corpus_encode_seconds": 166.9,
-    "corpus_encode_questions_per_second": 3133.8,
+    "corpus_encode_seconds": 165.3,
+    "corpus_encode_questions_per_second": 3163.1,
     "max_seq_length": 256,
     "search_dtype": "float16"
   },
@@ -21,9 +21,9 @@
       "mrr@10": 0.8704665674603175,
       "ndcg@10": 0.879115701612235,
       "num_queries": 4000,
-      "query_encoding_seconds": 1.3370709929999975,
-      "search_seconds": 0.3911259900000914,
-      "total_retrieval_seconds": 1.728196983000089
+      "query_encoding_seconds": 1.325789077999616,
+      "search_seconds": 0.43016316700050083,
+      "total_retrieval_seconds": 1.7559522450001168
     },
     "val": {
       "recall@1": 0.6833646825396824,
@@ -34,14 +34,14 @@
       "mrr@10": 0.8507293650793651,
       "ndcg@10": 0.8619758856351581,
       "num_queries": 1000,
-      "query_encoding_seconds": 0.23567878700009715,
-      "search_seconds": 0.07636361899994881,
-      "total_retrieval_seconds": 0.31204240600004596
+      "query_encoding_seconds": 0.20828708699991694,
+      "search_seconds": 0.08196700699954818,
+      "total_retrieval_seconds": 0.2902540939994651
     }
   },
   "latency": {
-    "mean_ms": 9.407447740010184,
-    "median_ms": 8.202964500014787,
-    "p95_ms": 13.18935294998482
+    "mean_ms": 7.959020679982132,
+    "median_ms": 7.725361500433792,
+    "p95_ms": 9.69383800024843
   }
 }

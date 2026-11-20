@@ -4,3 +4,5 @@ numpy
 matplotlib
 rank-bm25
 bm25s
+torch
+sentence-transformers

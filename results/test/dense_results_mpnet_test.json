@@ -1,0 +1,34 @@
+{
+  "info": {
+    "model": "sentence-transformers/all-mpnet-base-v2",
+    "device": "cuda",
+    "parameters_millions": 109.49,
+    "embedding_dim": 768,
+    "index_size_mb_float32": 1606.4,
+    "corpus_size": 522931,
+    "corpus_encode_seconds": 1075.9,
+    "corpus_encode_questions_per_second": 486.0,
+    "max_seq_length": 384,
+    "search_dtype": "float16"
+  },
+  "eval": {
+    "test": {
+      "recall@1": 0.6931703904335913,
+      "recall@5": 0.9112236075691348,
+      "recall@10": 0.9502607575430193,
+      "recall@20": 0.9740937435613307,
+      "recall@50": 0.9903083636876123,
+      "mrr@10": 0.8653884523809524,
+      "ndcg@10": 0.874581176705768,
+      "num_queries": 10000,
+      "query_encoding_seconds": 10.625998180000352,
+      "search_seconds": 1.0415165650001654,
+      "total_retrieval_seconds": 11.667514745000517
+    }
+  },
+  "latency": {
+    "mean_ms": 17.6811804900035,
+    "median_ms": 16.221291499732615,
+    "p95_ms": 23.565331800227792
+  }
+}
