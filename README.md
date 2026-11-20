@@ -14,9 +14,11 @@ A GPU (e.g. Colab) is strongly recommended for `dense_retrieval.py` and `rerank.
 |---|---|---|
 | EDA | `python eda.py` | `results/eda_statistics.*`, figures |
 | TF-IDF / BM25 baselines | `python baseline_tfidf.py`, `python baseline_bm25.py` | `results/tfidf_results.txt`, `results/bm25_results.txt` |
-| Dense retrieval (MiniLM, MPNet) | `python dense_retrieval.py` | `results/dense_results_*.json`, `results/runs/dense_*_top50.json` |
-| Cross-encoder reranking + depth study | `python rerank.py` | `results/rerank_results_*.json`, `results/figures/rerank_depth_*.png` |
-| Final tables, figures, failure analysis | `python final_analysis.py` | `results/results_table_*.md/.csv`, `breakdown_*.md`, `failure_analysis_*.md`, `qualitative_examples_*.md` |
+| Dense retrieval (MiniLM, MPNet) | `python dense_retrieval.py` | `results/<split>/dense_results_*.json`, `results/<split>/runs/dense_*_top50.json` |
+| Cross-encoder reranking + depth study | `python rerank.py` | `results/<split>/rerank_results_*.json`, `results/<split>/figures/rerank_depth_*.png` |
+| Final tables, figures, failure analysis | `python final_analysis.py` | `results/<split>/results_table_*.md/.csv`, `breakdown_*.md`, `failure_analysis_*.md`, `qualitative_examples_*.md`, `figures/` |
+
+`<split>` is `dev` (analysed on the held-out val queries) or `test`. Each script writes to `results/dev/` or `results/test/` according to its `--split` option; EDA and baseline outputs stay in `results/`.
 
 ## Evaluation protocol
 - Development uses the BEIR `dev` queries, split 80/20 into dev (4000, tuning and model selection) and val (1000, reporting) with `random_state=42`.

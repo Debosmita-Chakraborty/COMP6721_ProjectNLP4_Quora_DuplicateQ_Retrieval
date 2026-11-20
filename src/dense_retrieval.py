@@ -37,9 +37,20 @@ from data_split import split_dataset
 # ----------------------------------------------------------------------------
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
-RESULTS_DIR = PROJECT_DIR / "results"
-FIGURES_DIR = RESULTS_DIR / "figures"
-RUNS_DIR = RESULTS_DIR / "runs"
+RESULTS_ROOT = PROJECT_DIR / "results"
+
+
+def results_dir(split):
+    """Outputs of each split live in results/dev/ or results/test/."""
+    return RESULTS_ROOT / split
+
+
+def runs_dir(split):
+    return results_dir(split) / "runs"
+
+
+def figures_dir(split):
+    return results_dir(split) / "figures"
 
 MODELS = {
     "minilm": "sentence-transformers/all-MiniLM-L6-v2",
@@ -352,8 +363,8 @@ def run_model(key, args, corpus_ids, corpus_texts, id_to_index, eval_sets):
         results["eval"][set_name] = metrics
 
         # Save the top-50 run so the reranker can reuse it without re-searching
-        RUNS_DIR.mkdir(parents=True, exist_ok=True)
-        run_path = RUNS_DIR / f"dense_{key}_{set_name}_top{MAX_K}.json"
+        runs_dir(args.split).mkdir(parents=True, exist_ok=True)
+        run_path = runs_dir(args.split) / f"dense_{key}_{set_name}_top{MAX_K}.json"
         run_path.write_text(json.dumps(run))
 
         print(f"\n--- {key} {set_name} results ---")
@@ -378,8 +389,8 @@ def run_model(key, args, corpus_ids, corpus_texts, id_to_index, eval_sets):
           round(results["latency"]["p95_ms"], 2), "ms")
 
     # Save results
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = RESULTS_DIR / f"dense_results_{key}_{args.split}.json"
+    results_dir(args.split).mkdir(parents=True, exist_ok=True)
+    out_path = results_dir(args.split) / f"dense_results_{key}_{args.split}.json"
     out_path.write_text(json.dumps(results, indent=2))
     print("Saved:", out_path)
 
@@ -405,7 +416,7 @@ def summarize(split):
 
     all_results = {}
     for key in MODELS:
-        path = RESULTS_DIR / f"dense_results_{key}_{split}.json"
+        path = results_dir(split) / f"dense_results_{key}_{split}.json"
         if path.exists():
             all_results[key] = json.loads(path.read_text())
 
@@ -455,8 +466,8 @@ def summarize(split):
     axes[2].set_title("Model size")
 
     plt.tight_layout()
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
-    fig_path = FIGURES_DIR / f"dense_comparison_{split}.png"
+    figures_dir(split).mkdir(parents=True, exist_ok=True)
+    fig_path = figures_dir(split) / f"dense_comparison_{split}.png"
     plt.savefig(fig_path, dpi=300, bbox_inches="tight")
     plt.close()
     print("\nSaved figure:", fig_path)

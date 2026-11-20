@@ -2,15 +2,15 @@
 Final results tables, figures, and failure analysis for all retrieval methods.
 
 Inputs (all produced by the other scripts)
-    results/runs/dense_<model>_<set>_top50.json        from dense_retrieval.py
-    results/runs/rerank_<model>_<set>_depth<D>.json    from rerank.py
-    results/dense_results_*.json, results/rerank_results_*.json
+    results/<split>/runs/dense_<model>_<set>_top50.json        from dense_retrieval.py
+    results/<split>/runs/rerank_<model>_<set>_depth<D>.json    from rerank.py
+    results/<split>/dense_results_*.json, rerank_results_*.json
 
 TF-IDF and BM25 are re-run here with the SAME top-50 output format and the same
 self-exclusion rule, so every method is scored by exactly the same code on exactly
 the same queries (the baseline scripts only report Recall@10 and MRR@10).
 
-Outputs (results/)
+Outputs (results/<split>/, where <split> is dev or test)
     results_table_<split>.md / .csv        final comparison of all methods
     breakdown_<split>.md                   MRR@10 by query length and by word overlap
     failure_analysis_<split>.md            failure categories + examples for the final system
@@ -40,9 +40,20 @@ from metrics import KS, compute_metrics, per_query_metrics
 
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
-RESULTS_DIR = PROJECT_DIR / "results"
-FIGURES_DIR = RESULTS_DIR / "figures"
-RUNS_DIR = RESULTS_DIR / "runs"
+RESULTS_ROOT = PROJECT_DIR / "results"
+
+
+def results_dir(split):
+    """Outputs of each split live in results/dev/ or results/test/."""
+    return RESULTS_ROOT / split
+
+
+def runs_dir(split):
+    return results_dir(split) / "runs"
+
+
+def figures_dir(split):
+    return results_dir(split) / "figures"
 
 DENSE_NAMES = {"minilm": "MiniLM", "mpnet": "MPNet"}
 TOP_K = 50
@@ -63,7 +74,7 @@ def load_or_compute(path, compute):
         data = json.loads(path.read_text())
         return data["run"], data["ms_per_query"]
     run, ms_per_query = compute()
-    RUNS_DIR.mkdir(parents=True, exist_ok=True)
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps({"run": run, "ms_per_query": ms_per_query}))
     return run, ms_per_query
 
@@ -124,7 +135,7 @@ def choose_first_stage():
 
     best_key, best = None, -1.0
     for key in DENSE_NAMES:
-        path = RESULTS_DIR / f"dense_results_{key}_dev.json"
+        path = results_dir("dev") / f"dense_results_{key}_dev.json"
         if path.exists():
             recall = json.loads(path.read_text())["eval"]["dev"]["recall@20"]
             if recall > best:
@@ -140,7 +151,7 @@ def pick_final_system(first_stage, depths):
     highest MRR@10 on the DEV queries (4000 queries), not on val or test.
     """
 
-    path = RESULTS_DIR / f"rerank_results_{first_stage}_dev.json"
+    path = results_dir("dev") / f"rerank_results_{first_stage}_dev.json"
     if not path.exists():
         return DENSE_NAMES[first_stage]
 
@@ -191,9 +202,10 @@ def results_table(runs, qrels, latencies, set_name, split):
               "All methods use the same corpus and queries, the same K values and the same "
               "metric code, and a query never retrieves itself."]
 
-    (RESULTS_DIR / f"results_table_{split}.md").write_text("\n".join(lines) + "\n")
+    results_dir(split).mkdir(parents=True, exist_ok=True)
+    (results_dir(split) / f"results_table_{split}.md").write_text("\n".join(lines) + "\n")
 
-    with open(RESULTS_DIR / f"results_table_{split}.csv", "w", newline="") as f:
+    with open(results_dir(split) / f"results_table_{split}.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["method"] + cols + ["latency_ms"])
         for name in names:
@@ -235,8 +247,8 @@ def plot_comparison(metrics, set_name, split):
     axes[1].grid(alpha=0.3)
 
     plt.tight_layout()
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
-    path = FIGURES_DIR / f"final_comparison_{split}.png"
+    figures_dir(split).mkdir(parents=True, exist_ok=True)
+    path = figures_dir(split) / f"final_comparison_{split}.png"
     plt.savefig(path, dpi=300, bbox_inches="tight")
     plt.close()
     print("Saved figure:", path)
@@ -306,13 +318,13 @@ def breakdown(per_query, features, set_name, split):
 
     axes[0].legend(fontsize=7)
     plt.tight_layout()
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
-    plt.savefig(FIGURES_DIR / f"breakdown_{split}.png", dpi=300, bbox_inches="tight")
+    figures_dir(split).mkdir(parents=True, exist_ok=True)
+    plt.savefig(figures_dir(split) / f"breakdown_{split}.png", dpi=300, bbox_inches="tight")
     plt.close()
 
     lines.append("Word overlap = mean Jaccard similarity between the query's words and each "
                  "of its relevant questions (lower-cased words).")
-    (RESULTS_DIR / f"breakdown_{split}.md").write_text("\n".join(lines) + "\n")
+    (results_dir(split) / f"breakdown_{split}.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
 
 
@@ -392,9 +404,9 @@ def failure_analysis(system, run, qrels, queries, corpus, features, per_query,
         for qid in rng.sample(qids, min(examples_per_category, len(qids))):
             lines += [show_example(qid, queries, corpus, qrels, run, system), ""]
 
-    (RESULTS_DIR / f"failure_analysis_{split}.md").write_text("\n".join(lines) + "\n")
+    (results_dir(split) / f"failure_analysis_{split}.md").write_text("\n".join(lines) + "\n")
 
-    with open(RESULTS_DIR / f"failure_cases_{split}.csv", "w", newline="") as f:
+    with open(results_dir(split) / f"failure_cases_{split}.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["query_id", "query", "category", "first_relevant_rank",
                          "relevant_question", "top1_retrieved"])
@@ -462,7 +474,7 @@ def qualitative_examples(runs, per_query, qrels, queries, corpus, features,
         lines.insert(2, summary + "\n")
         print(summary)
 
-    (RESULTS_DIR / f"qualitative_examples_{split}.md").write_text("\n".join(lines) + "\n")
+    (results_dir(split) / f"qualitative_examples_{split}.md").write_text("\n".join(lines) + "\n")
 
 
 # ----------------------------------------------------------------------------
@@ -501,27 +513,27 @@ def main():
 
     if not args.skip_tfidf:
         runs["TF-IDF"], latencies["TF-IDF"] = load_or_compute(
-            RUNS_DIR / f"tfidf_{set_name}_top{TOP_K}.json",
+            runs_dir(args.split) / f"tfidf_{set_name}_top{TOP_K}.json",
             lambda: run_tfidf(corpus_ids, corpus_texts, query_ids, query_texts))
 
     runs["BM25"], latencies["BM25"] = load_or_compute(
-        RUNS_DIR / f"bm25_{set_name}_top{TOP_K}.json",
+        runs_dir(args.split) / f"bm25_{set_name}_top{TOP_K}.json",
         lambda: run_bm25(corpus_ids, corpus_texts, query_ids, query_texts))
 
     dense_latency = {}
     for key, name in DENSE_NAMES.items():
-        run_path = RUNS_DIR / f"dense_{key}_{set_name}_top{TOP_K}.json"
-        res_path = RESULTS_DIR / f"dense_results_{key}_{args.split}.json"
+        run_path = runs_dir(args.split) / f"dense_{key}_{set_name}_top{TOP_K}.json"
+        res_path = results_dir(args.split) / f"dense_results_{key}_{args.split}.json"
         if run_path.exists() and res_path.exists():
             runs[name] = json.loads(run_path.read_text())
             dense_latency[key] = json.loads(res_path.read_text())["latency"]["mean_ms"]
             latencies[name] = dense_latency[key]
 
-    rerank_path = RESULTS_DIR / f"rerank_results_{first_stage}_{args.split}.json"
+    rerank_path = results_dir(args.split) / f"rerank_results_{first_stage}_{args.split}.json"
     rerank_latency = json.loads(rerank_path.read_text())["latency"] if rerank_path.exists() else {}
 
     for d in args.depths:
-        run_path = RUNS_DIR / f"rerank_{first_stage}_{set_name}_depth{d}.json"
+        run_path = runs_dir(args.split) / f"rerank_{first_stage}_{set_name}_depth{d}.json"
         if run_path.exists():
             name = f"{dense_name}+CE@{d}"
             runs[name] = json.loads(run_path.read_text())
@@ -563,7 +575,7 @@ def main():
     qualitative_examples(runs, per_query, qrel_set, query_set, corpus, features,
                          dense_name, rerank_name, set_name, args.split, args.examples)
 
-    print("\nDone. Outputs are in", RESULTS_DIR)
+    print("\nDone. Outputs are in", results_dir(args.split))
 
 
 if __name__ == "__main__":

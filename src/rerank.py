@@ -22,7 +22,7 @@ Usage
     python rerank.py --cache-dir /content/drive/MyDrive/quora_cache   # Colab: keep scores on Drive
 
 Prerequisite
-    python dense_retrieval.py [--split test]         # writes results/runs/dense_<model>_<set>_top50.json
+    python dense_retrieval.py [--split test]         # writes results/<split>/runs/dense_<model>_<set>_top50.json
 """
 
 import argparse
@@ -43,9 +43,20 @@ from metrics import KS, compute_metrics
 # ----------------------------------------------------------------------------
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
-RESULTS_DIR = PROJECT_DIR / "results"
-FIGURES_DIR = RESULTS_DIR / "figures"
-RUNS_DIR = RESULTS_DIR / "runs"
+RESULTS_ROOT = PROJECT_DIR / "results"
+
+
+def results_dir(split):
+    """Outputs of each split live in results/dev/ or results/test/."""
+    return RESULTS_ROOT / split
+
+
+def runs_dir(split):
+    return results_dir(split) / "runs"
+
+
+def figures_dir(split):
+    return results_dir(split) / "figures"
 
 DENSE_MODELS = ("minilm", "mpnet")
 CROSS_ENCODERS = {
@@ -69,7 +80,7 @@ def choose_first_stage():
     best_key, best_recall = None, -1.0
 
     for key in DENSE_MODELS:
-        path = RESULTS_DIR / f"dense_results_{key}_dev.json"
+        path = results_dir("dev") / f"dense_results_{key}_dev.json"
         if not path.exists():
             continue
         recall = json.loads(path.read_text())["eval"]["dev"]["recall@20"]
@@ -86,9 +97,9 @@ def choose_first_stage():
     return best_key
 
 
-def load_first_stage_run(key, set_name):
+def load_first_stage_run(key, set_name, split):
 
-    path = RUNS_DIR / f"dense_{key}_{set_name}_top{MAX_FIRST_STAGE_DEPTH}.json"
+    path = runs_dir(split) / f"dense_{key}_{set_name}_top{MAX_FIRST_STAGE_DEPTH}.json"
 
     if not path.exists():
         raise SystemExit(
@@ -237,8 +248,9 @@ def plot_depth_study(results, eval_name, depths, split, first_stage):
     axes[1].set_title("Reranking cost")
 
     plt.tight_layout()
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
-    path = FIGURES_DIR / f"rerank_depth_{first_stage}_{split}.png"
+    out_dir = figures_dir(results["info"]["split"])
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / f"rerank_depth_{first_stage}_{split}.png"
     plt.savefig(path, dpi=300, bbox_inches="tight")
     plt.close()
     print("Saved figure:", path)
@@ -310,7 +322,7 @@ def main():
         "latency": {},
     }
 
-    RUNS_DIR.mkdir(parents=True, exist_ok=True)
+    runs_dir(args.split).mkdir(parents=True, exist_ok=True)
     cache_dir = Path(args.cache_dir)
     ce_tag = ce_name.split("/")[-1]
 
@@ -320,7 +332,7 @@ def main():
 
         print(f"\n=== {set_name} queries ===")
 
-        run = load_first_stage_run(first_stage, set_name)
+        run = load_first_stage_run(first_stage, set_name, args.split)
 
         # Keep only queries that have relevance judgments (as in every other script)
         run = {qid: ranked for qid, ranked in run.items() if qrel_set.get(qid)}
@@ -351,7 +363,7 @@ def main():
             show(f"rerank top{d}", metrics)
 
             suffix = "" if not args.max_queries else "_smoke"
-            (RUNS_DIR / f"rerank_{first_stage}_{set_name}_depth{d}{suffix}.json").write_text(
+            (runs_dir(args.split) / f"rerank_{first_stage}_{set_name}_depth{d}{suffix}.json").write_text(
                 json.dumps(reranked))
 
         last_run = (run, query_set)
@@ -366,8 +378,8 @@ def main():
 
     # 4. Save results and figure (val for the dev split, test for the test split)
     suffix = "" if not args.max_queries else "_smoke"
-    out_path = RESULTS_DIR / f"rerank_results_{first_stage}_{args.split}{suffix}.json"
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = results_dir(args.split) / f"rerank_results_{first_stage}_{args.split}{suffix}.json"
+    results_dir(args.split).mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(results, indent=2))
     print("Saved:", out_path)
 
